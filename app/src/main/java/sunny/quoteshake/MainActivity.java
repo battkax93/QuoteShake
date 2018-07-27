@@ -1,5 +1,6 @@
 package sunny.quoteshake;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,9 +24,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         tvShake = findViewById(R.id.tv_shakeme);
 
+        initShake();
+        update();
+
+    }
+
+    private void initShake() {
         ShakeOptions options = new ShakeOptions()
                 .background(true)
                 .interval(1000)
@@ -36,20 +42,48 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onShake() {
                 a = random();
-                if (a == 1) {
-//                    initVisibility();
-                    tvShake.setText(quote[a - 1]);
-                } else if (a == 2) {
-                    tvShake.setText(quote[a - 1]);
-                } else if (a == 3) {
-                    tvShake.setText(quote[a - 1]);
-                } else {
-                    tvShake.setText(quote[a - 1]);
-                }
+                tvShake.setText(quote[a]);
                 Toast.makeText(getApplicationContext(), "Shaken", Toast.LENGTH_LONG).show();
+
             }
         });
+    }
 
+    private void update2() {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (tvShake.getText().toString() != getString(R.string.shake_me)) {
+                    tvShake.setText(getString(R.string.shake_me));
+                }
+            }
+        }).start();
+    }
+
+    private int random() {
+        int max = 3;
+        int min = 0;
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
+    private void update() {
+        final Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                String s = tvShake.getText().toString();
+                String x = getString(R.string.shake_me);
+                if (s != x) {
+                    tvShake.setText(getString(R.string.shake_me));
+                }
+                handler.postDelayed(this, 30 * 1000);
+            }
+        });
     }
 
     private void initVisibility() {
@@ -60,10 +94,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private int random() {
-        int max = 4;
-        int min = 1;
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
-    }
 }
