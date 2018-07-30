@@ -9,7 +9,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_margin="10dp"
-        card_view:cardBackgroundColor="@android:color/holo_blue_light"
+        card_view:cardBackgroundColor="@android:color/white"
         card_view:cardCornerRadius="5dp"
         card_view:cardElevation="4dp"
         card_view:cardMaxElevation="6dp">

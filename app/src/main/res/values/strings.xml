@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Quote Shake</string>
     <string name="shake_me">SHAKE ME!</string>
+    <string name="conn_reminder">Hi Buddy, please check your connection first</string>
 
     <string-array name="img">
         <item>https://i.pinimg.com/originals/b3/68/2e/b3682e52a71afcf05ba038d85c22352b.jpg</item>
