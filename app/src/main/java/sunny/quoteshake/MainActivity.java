@@ -40,7 +40,8 @@ public class MainActivity extends Globals {
 
     String TAG = "methode";
 
-    String[] lottie = {"cycle_animation.json",
+    String[] lottie = {
+            "cycle_animation.json",
             "emoji wink.json",
             "loading_animation.json",
             "smiley_stack.json"};
@@ -57,9 +58,7 @@ public class MainActivity extends Globals {
 
         Log.d(TAG, "onCreate");
 
-        lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
-        tvShake = findViewById(R.id.tv_shakeme);
-        ivShakeme = findViewById(R.id.iv_shakeme);
+        init();
 
         fb = FirebaseDatabase.getInstance();
 
@@ -68,6 +67,20 @@ public class MainActivity extends Globals {
         initShake();
         update();
 
+    }
+
+    private void init(){
+        lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
+        tvShake = findViewById(R.id.tv_shakeme);
+        ivShakeme = findViewById(R.id.iv_shakeme);
+
+        ivShakeme.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showDialog2(MainActivity.this);
+              return false;
+            }
+        });
     }
 
     public void fbRetriever() {
@@ -130,7 +143,6 @@ public class MainActivity extends Globals {
             }
         });
     }
-
 
     @Override
     protected void onDestroy() {
