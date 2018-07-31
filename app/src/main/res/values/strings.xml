@@ -2,11 +2,14 @@
     <string name="app_name">Quote Shake</string>
     <string name="shake_me">SHAKE ME!</string>
     <string name="conn_reminder">Hi Buddy, please check your connection first</string>
+    <string name="b_download">DOWNLOAD</string>
+    <string name="b_share">SHARE</string>
 
-    <string-array name="img">
-        <item>https://i.pinimg.com/originals/b3/68/2e/b3682e52a71afcf05ba038d85c22352b.jpg</item>
-        <item>https://i.pinimg.com/originals/68/fb/9b/68fb9bb6beb6b1af3b6ccfed1ca37cb6.jpg</item>
-        <item>https://i.pinimg.com/564x/7f/2c/6d/7f2c6d38714b77c26ee00896c9fa0725.jpg</item>
-        <item>https://i.pinimg.com/236x/34/7e/8b/347e8b6a6cccc91c5d8dcadb743cc7f8.jpg</item>
+    <string-array name="lottie">
+        <item>restless_gift.json</item>
+        <item>paper.json</item>
+        <item>loading_animation.json</item>
+        <item>smiley_stack.json</item>
     </string-array>
+
 </resources>

@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,22 +36,16 @@ public class MainActivity extends Globals {
     ImageView ivShakeme;
     int a, x, z;
 
-    private Dialog dialog;
+    public Dialog dialog, dialog2;
 
     FirebaseDatabase fb;
 
     String TAG = "methode";
 
-    String[] lottie = {
-            "cycle_animation.json",
-            "emoji wink.json",
-            "loading_animation.json",
-            "smiley_stack.json"};
+    String[] lottie;
 
     String[] picQuote2;
-
     ArrayList<String> picQuote = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +65,24 @@ public class MainActivity extends Globals {
 
     }
 
-    private void init(){
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        shakeDetector.destroy(getBaseContext());
+        super.onDestroy();
+    }
+
+    private void init() {
         lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
         tvShake = findViewById(R.id.tv_shakeme);
         ivShakeme = findViewById(R.id.iv_shakeme);
 
-        ivShakeme.setOnLongClickListener(new View.OnLongClickListener() {
+        lottie = getResources().getStringArray(R.array.lottie);
+
+        ivShakeme.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                showDialog2(MainActivity.this);
-              return false;
+            public void onClick(View v) {
+                showDialog2();
             }
         });
     }
@@ -117,6 +121,7 @@ public class MainActivity extends Globals {
     }
 
     private void initShake() {
+
         ShakeOptions options = new ShakeOptions()
                 .background(true)
                 .interval(1000)
@@ -128,6 +133,11 @@ public class MainActivity extends Globals {
             public void onShake() {
 
                 Log.d(TAG, "shaken");
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_SHAKE,
+                        Contants.NAME_SHAKE,
+                        Contants.TYPE_SHAKE
+                );
 
                 if (picQuote2 != null) {
 
@@ -142,13 +152,6 @@ public class MainActivity extends Globals {
                 }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG,"onDestroy");
-        shakeDetector.destroy(getBaseContext());
-        super.onDestroy();
     }
 
     public void setPicQuote2() {
@@ -194,6 +197,11 @@ public class MainActivity extends Globals {
                     lottieAnimationView2.setVisibility(View.VISIBLE);
                     tvShake.setVisibility(View.VISIBLE);
                     setLottie();
+
+                    if (dialog2.isShowing()) {
+                        dialog2 = new Dialog(MainActivity.this);
+                        dialog2.cancel();
+                    }
                 }
                 handler.postDelayed(this, 30 * 1000);
             }
@@ -202,7 +210,7 @@ public class MainActivity extends Globals {
 
     public void showDialog(Activity activity) {
 
-        Log.d("TAG", "showDialog");
+        Log.d(TAG, "showDialog");
 
         dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -218,7 +226,42 @@ public class MainActivity extends Globals {
         dialog.show();
     }
 
+    public void showDialog2() {
 
+        Log.d(TAG, "showdialog2");
+
+        dialog2 = new Dialog(this);
+        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog2.setCancelable(true);
+        dialog2.setContentView(R.layout.download_dialog);
+
+        Button dialogButton2 = dialog2.findViewById(R.id.btn_download);
+        Button dialogButton = dialog2.findViewById(R.id.btn_share);
+
+        dialogButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_BUTTON_DOWNLOAD,
+                        Contants.NAME_BUTTON_DOWNLOAD,
+                        Contants.TYPE_BUTTON);
+            }
+        });
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_BUTTON_SHARE,
+                        Contants.NAME_BUTTON_SHARE,
+                        Contants.TYPE_BUTTON);
+            }
+        });
+
+        dialog2.show();
+
+    }
 
 /*
     private void update3() {
