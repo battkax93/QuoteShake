@@ -4,6 +4,7 @@
     <string name="conn_reminder">Hi Buddy, please check your connection first</string>
     <string name="b_download">DOWNLOAD</string>
     <string name="b_share">SHARE</string>
+    <string name="quote_shake">QuoteShake</string>
 
     <string-array name="lottie">
         <item>restless_gift.json</item>

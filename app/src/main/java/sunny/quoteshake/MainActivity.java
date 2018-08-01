@@ -1,9 +1,13 @@
 package sunny.quoteshake;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
-import android.os.Handler;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -13,12 +17,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -34,11 +47,13 @@ public class MainActivity extends Globals {
     ShakeDetector shakeDetector;
     TextView tvShake;
     ImageView ivShakeme;
+    public String url, fname;
     int a, x, z;
 
     public Dialog dialog, dialog2;
 
     FirebaseDatabase fb;
+    AdView adView;
 
     String TAG = "methode";
 
@@ -61,8 +76,8 @@ public class MainActivity extends Globals {
         setLottie();
         fbRetriever();
         initShake();
+        adMobs();
         update();
-
     }
 
     @Override
@@ -73,6 +88,7 @@ public class MainActivity extends Globals {
     }
 
     private void init() {
+        adView = findViewById(R.id.adView_main);
         lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
         tvShake = findViewById(R.id.tv_shakeme);
         ivShakeme = findViewById(R.id.iv_shakeme);
@@ -82,7 +98,7 @@ public class MainActivity extends Globals {
         ivShakeme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog2();
+                reqPermission();
             }
         });
     }
@@ -117,6 +133,50 @@ public class MainActivity extends Globals {
             });
         } else {
             toastHelper(getString(R.string.conn_reminder));
+        }
+    }
+
+    public void adMobs() {
+
+        MobileAds.initialize(this, Contants.ADD_MOB_APP_ID);             //adMob
+
+        if (!Contants.admob) {
+            Log.d(TAG, "admob DEV");
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice("6B7C8118873F959A250EF2732E708691")
+                    .build();
+
+            adView.loadAd(adRequest);
+        } else {
+            Log.d(TAG, "admob PROD");
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                }
+
+                @Override
+                public void onAdClosed() {
+                    Toast.makeText(getApplicationContext(), "Ad is closed!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    Toast.makeText(getApplicationContext(), "Ad failed to load! error code: " + errorCode, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onAdLeftApplication() {
+                    Toast.makeText(getApplicationContext(), "Ad left application!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onAdOpened() {
+                    super.onAdOpened();
+                }
+            });
+
+            adView.loadAd(adRequest);
         }
     }
 
@@ -156,9 +216,10 @@ public class MainActivity extends Globals {
 
     public void setPicQuote2() {
         a = random();
-        String url = picQuote2[a];
+        url = picQuote2[a];
         lottieAnimationView2.setVisibility(View.GONE);
         tvShake.setVisibility(View.GONE);
+        adView.setVisibility(View.GONE);
         ivShakeme.setVisibility(View.VISIBLE);
         Picasso.get().load(url)
                 .error(R.drawable.nointernet)
@@ -194,18 +255,47 @@ public class MainActivity extends Globals {
 
                 if (lottieAnimationView2.getVisibility() == View.GONE) {
                     ivShakeme.setVisibility(View.GONE);
+                    adView.setVisibility(View.VISIBLE);
                     lottieAnimationView2.setVisibility(View.VISIBLE);
                     tvShake.setVisibility(View.VISIBLE);
                     setLottie();
-
-                    if (dialog2.isShowing()) {
-                        dialog2 = new Dialog(MainActivity.this);
-                        dialog2.cancel();
-                    }
                 }
                 handler.postDelayed(this, 30 * 1000);
             }
         });
+    }
+
+    public void imageDownload() {
+
+        String n = String.valueOf(System.currentTimeMillis());
+        fname = "QuoteShake-" + n + ".jpg";
+
+        Log.d(TAG, "imageDownload");
+        Bitmap bitmap = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            save2(bitmap, fname);
+        } else {
+            save1(bitmap, fname, this);
+        }
+    }
+
+    public void reqPermission() {
+        Log.d(TAG,"reqPermission");
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        showDialog2();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                }).check();
     }
 
     public void showDialog(Activity activity) {
@@ -246,6 +336,8 @@ public class MainActivity extends Globals {
                         Contants.ID_BUTTON_DOWNLOAD,
                         Contants.NAME_BUTTON_DOWNLOAD,
                         Contants.TYPE_BUTTON);
+
+                imageDownload();
             }
         });
 

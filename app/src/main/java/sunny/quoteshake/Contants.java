@@ -3,6 +3,15 @@ package sunny.quoteshake;
 
 public class Contants {
 
+
+    /**DEV**/
+    public static final Boolean admob = false;
+    public static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544~3347511713";
+
+
+    /**PROD**/
+//    public static final Boolean admob = true;
+
     /**Firebase Analytic**/
 
     public static final String TYPE_BUTTON = "button";
