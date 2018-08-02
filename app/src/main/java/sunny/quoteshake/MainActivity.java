@@ -49,6 +49,7 @@ public class MainActivity extends Globals {
     ImageView ivShakeme;
     public String url, fname;
     int a, x, z;
+    int count = 1;
 
     public Dialog dialog, dialog2;
 
@@ -260,7 +261,7 @@ public class MainActivity extends Globals {
                     tvShake.setVisibility(View.VISIBLE);
                     setLottie();
                 }
-                handler.postDelayed(this, 30 * 1000);
+                handler.postDelayed(this, 60 * 1000);
             }
         });
     }
@@ -274,20 +275,27 @@ public class MainActivity extends Globals {
         Bitmap bitmap = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
 
         if (Build.VERSION.SDK_INT >= 26) {
-            save2(bitmap, fname);
+            save2(bitmap, fname, count);
+            count++;
         } else {
-            save1(bitmap, fname, this);
+            save1(bitmap,fname,this,count);
+            count++;
         }
+
+        dialog2.cancel();
     }
 
     public void reqPermission() {
-        Log.d(TAG,"reqPermission");
+        Log.d(TAG, "reqPermission");
         Dexter.withActivity(this)
                 .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        showDialog2();
+
+                        Bitmap bmp = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
+                        showDialog2(bmp);
+
                     }
 
                     @Override
@@ -316,7 +324,7 @@ public class MainActivity extends Globals {
         dialog.show();
     }
 
-    public void showDialog2() {
+    public void showDialog2(final Bitmap bmp) {
 
         Log.d(TAG, "showdialog2");
 
@@ -348,8 +356,12 @@ public class MainActivity extends Globals {
                         Contants.ID_BUTTON_SHARE,
                         Contants.NAME_BUTTON_SHARE,
                         Contants.TYPE_BUTTON);
+
+                shareBitmap(bmp);
             }
         });
+
+
 
         dialog2.show();
 

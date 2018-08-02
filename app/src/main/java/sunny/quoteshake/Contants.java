@@ -11,6 +11,8 @@ public class Contants {
 
     /**PROD**/
 //    public static final Boolean admob = true;
+//    public static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544~3347511713";
+
 
     /**Firebase Analytic**/
 
