@@ -29,7 +29,7 @@ import sunny.quoteshake.R;
 
 public class NotificationHelper extends ContextWrapper {
     private NotificationManager mManager;
-    //    public static final String ANDROID_CHANNEL_ID = "id.co.adira.ad1mobileakses.ANDROID";
+
     public static final String ANDROID_CHANNEL_NAME = "ANDROID CHANNEL";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -82,10 +82,11 @@ public class NotificationHelper extends ContextWrapper {
         intent.setDataAndType(pdfURI, "image/*");
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_background);
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.icon_2);
 
         return new Notification.Builder(getApplicationContext(), getPackageName())
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_download)
+                .setColor(getColor(R.color.colorPrimary))
                 .setLargeIcon(logo)
                 .setContentTitle(title)
                 .setContentText(body)

@@ -177,9 +177,10 @@ public class Globals extends AppCompatActivity {
         PendingIntent pIntent = PendingIntent.getActivity(activity, 0, intent, 0);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_background);
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_logo);
         notificationBuilder = new NotificationCompat.Builder(activity)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_download)
+                .setColor(getResources().getColor(R.color.dark_blue))
                 .setLargeIcon(logo)
                 .setContentTitle("Quote Shake")
                 .setContentText("Downloading File")
