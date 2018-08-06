@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -68,7 +67,7 @@ public class MainActivity extends Globals {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate");
+        logHelper("onCreate");
 
         init();
 
@@ -83,7 +82,7 @@ public class MainActivity extends Globals {
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        logHelper("onDestroy");
         shakeDetector.destroy(getBaseContext());
         super.onDestroy();
     }
@@ -105,7 +104,7 @@ public class MainActivity extends Globals {
     }
 
     public void fbRetriever() {
-        Log.d(TAG, "fbRetriever");
+        logHelper("fbRetriever");
         if (isNetworkAvailable()) {
             showDialog(this);
             final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -119,7 +118,7 @@ public class MainActivity extends Globals {
                     picQuote2 = new String[z];
                     for (DataSnapshot singlesnapshot : dataSnapshot.getChildren()) {
                         picQuote.add(singlesnapshot.getValue(String.class));
-                        Log.d(TAG, "add " + singlesnapshot.getValue(String.class));
+                        logHelper("add " + singlesnapshot.getValue(String.class));
                     }
 
                     picQuote2 = picQuote.toArray(picQuote2);
@@ -142,14 +141,14 @@ public class MainActivity extends Globals {
         MobileAds.initialize(this, Contants.ADD_MOB_APP_ID);             //adMob
 
         if (!Contants.admob) {
-            Log.d(TAG, "admob DEV");
+            logHelper("admob DEV");
             AdRequest adRequest = new AdRequest.Builder()
                     .addTestDevice("6B7C8118873F959A250EF2732E708691")
                     .build();
 
             adView.loadAd(adRequest);
         } else {
-            Log.d(TAG, "admob PROD");
+            logHelper("admob PROD");
             AdRequest adRequest = new AdRequest.Builder().build();
             adView.setAdListener(new AdListener() {
                 @Override
@@ -193,7 +192,7 @@ public class MainActivity extends Globals {
             @Override
             public void onShake() {
 
-                Log.d(TAG, "shaken");
+                logHelper("shaken");
                 sendLogFBAnalytic(MainActivity.this,
                         Contants.ID_SHAKE,
                         Contants.NAME_SHAKE,
@@ -229,7 +228,7 @@ public class MainActivity extends Globals {
 
     public int random() {
 
-        Log.d(TAG, "random");
+        logHelper("random");
 
         int max = z;
         Random r = new Random();
@@ -238,7 +237,7 @@ public class MainActivity extends Globals {
 
     public void setLottie() {
 
-        Log.d(TAG, "setLottie");
+        logHelper("setLottie");
 
         x = randomLottie();
         lottieAnimationView2.setAnimation(lottie[x]);
@@ -252,7 +251,7 @@ public class MainActivity extends Globals {
             @Override
             public void run() {
 
-                Log.d(TAG, "update");
+                logHelper("update");
 
                 if (lottieAnimationView2.getVisibility() == View.GONE) {
                     ivShakeme.setVisibility(View.GONE);
@@ -271,7 +270,7 @@ public class MainActivity extends Globals {
         String n = String.valueOf(System.currentTimeMillis());
         fname = "QuoteShake-" + n + ".jpg";
 
-        Log.d(TAG, "imageDownload");
+        logHelper("imageDownload");
         Bitmap bitmap = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
 
         if (Build.VERSION.SDK_INT >= 26) {
@@ -286,7 +285,7 @@ public class MainActivity extends Globals {
     }
 
     public void reqPermission() {
-        Log.d(TAG, "reqPermission");
+        logHelper("reqPermission");
         Dexter.withActivity(this)
                 .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new PermissionListener() {
@@ -308,7 +307,7 @@ public class MainActivity extends Globals {
 
     public void showDialog(Activity activity) {
 
-        Log.d(TAG, "showDialog");
+        logHelper("showDialog");
 
         dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -326,7 +325,7 @@ public class MainActivity extends Globals {
 
     public void showDialog2(final Bitmap bmp) {
 
-        Log.d(TAG, "showdialog2");
+        logHelper("showdialog2");
 
         dialog2 = new Dialog(this);
         dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);

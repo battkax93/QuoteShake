@@ -42,6 +42,12 @@ public class Globals extends AppCompatActivity {
     String TAG = "methode";
 
 
+    public void logHelper(String s){
+        if(Contants.log){
+            Log.d(TAG, s);
+        }
+    }
+
     public void toastHelper(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }

@@ -5,11 +5,13 @@ public class Contants {
 
 
     /**DEV**/
+    public static final Boolean log = true;
     public static final Boolean admob = false;
     public static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544~3347511713";
 
 
     /**PROD**/
+//    public static final Boolean log = false;
 //    public static final Boolean admob = true;
 //    public static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544~3347511713";
 
