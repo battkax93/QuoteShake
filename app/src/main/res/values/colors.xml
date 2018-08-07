@@ -6,4 +6,5 @@
 
     <color name="cyan">#FF00D9FA</color>
     <color name="dark_blue">#1a2aff</color>
+    <color name="black_transparent">#a3000000</color>
 </resources>

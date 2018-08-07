@@ -16,11 +16,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -41,9 +42,31 @@ public class Globals extends AppCompatActivity {
 
     String TAG = "methode";
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-    public void logHelper(String s){
-        if(Contants.log){
+        MenuItem exitItem = menu.add(0, 1, 0, "Exit");
+        exitItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case 1:
+                finish();
+                break;
+        }
+
+        return false;
+    }
+
+
+
+    public void logHelper(String s) {
+        if (Contants.log) {
             Log.d(TAG, s);
         }
     }
@@ -157,18 +180,7 @@ public class Globals extends AppCompatActivity {
         toastHelper("Yoo, your image has been saved");
     }
 
-    public void shareBitmap(Bitmap bmp) {
 
-        Log.d(TAG,"shareBitmap");
-
-        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bmp, "title", null);
-        Uri bitmapUri = Uri.parse(bitmapPath);
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/png");
-        intent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
-        startActivity(Intent.createChooser(intent,"Share"));
-    }
 
     public void buildNotification1(String fname, Activity activity) {
 

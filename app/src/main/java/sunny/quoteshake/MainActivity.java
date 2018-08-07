@@ -3,15 +3,19 @@ package sunny.quoteshake;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,17 +49,18 @@ public class MainActivity extends Globals {
     LottieAnimationView lottieAnimationView, lottieAnimationView2;
     ShakeDetector shakeDetector;
     TextView tvShake;
-    ImageView ivShakeme;
+    ImageView ivShakeme, btnShare, btnDownload;
+    LinearLayout L1, L2;
+    Boolean cekL2 = false;
+
     public String url, fname;
     int a, x, z;
     int count = 1;
 
-    public Dialog dialog, dialog2;
+    public Dialog dialog;
 
     FirebaseDatabase fb;
     AdView adView;
-
-    String TAG = "methode";
 
     String[] lottie;
 
@@ -76,7 +81,7 @@ public class MainActivity extends Globals {
         setLottie();
         fbRetriever();
         initShake();
-        adMobs();
+        initadMobs();
         update();
     }
 
@@ -92,6 +97,11 @@ public class MainActivity extends Globals {
         lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
         tvShake = findViewById(R.id.tv_shakeme);
         ivShakeme = findViewById(R.id.iv_shakeme);
+        btnDownload = findViewById(R.id.btn_download2);
+        btnShare = findViewById(R.id.btn_share2);
+
+        L1 = findViewById(R.id.L1);
+        L2 = findViewById(R.id.L2);
 
         lottie = getResources().getStringArray(R.array.lottie);
 
@@ -101,42 +111,64 @@ public class MainActivity extends Globals {
                 reqPermission();
             }
         });
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_BUTTON_DOWNLOAD,
+                        Contants.TYPE_BUTTON,
+                        Contants.NAME_BUTTON_DOWNLOAD);
+                imageDownload();
+            }
+        });
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_BUTTON_SHARE,
+                        Contants.TYPE_BUTTON,
+                        Contants.NAME_BUTTON_SHARE);
+                shareBitmap();
+            }
+        });
+
     }
 
-    public void fbRetriever() {
-        logHelper("fbRetriever");
-        if (isNetworkAvailable()) {
-            showDialog(this);
-            final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference myRef = database.child("img/");
+    private void initShake() {
 
-            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Long size = dataSnapshot.getChildrenCount();
-                    z = size.intValue();
-                    picQuote2 = new String[z];
-                    for (DataSnapshot singlesnapshot : dataSnapshot.getChildren()) {
-                        picQuote.add(singlesnapshot.getValue(String.class));
-                        logHelper("add " + singlesnapshot.getValue(String.class));
+        ShakeOptions options = new ShakeOptions()
+                .background(true)
+                .interval(2000)
+                .shakeCount(3)
+                .sensibility(2.0f);
+
+        this.shakeDetector = new ShakeDetector(options).start(this, new ShakeCallback() {
+            @Override
+            public void onShake() {
+
+                logHelper("shaken");
+                sendLogFBAnalytic(MainActivity.this,
+                        Contants.ID_SHAKE,
+                        Contants.TYPE_SHAKE,
+                        Contants.NAME_SHAKE
+                );
+
+                if (picQuote2 != null) {
+
+                    setPicQuote2();
+
+                } else {
+                    if (isNetworkAvailable()) {
+                        fbRetriever();
+                    } else {
+                        toastHelper(getString(R.string.conn_reminder));
                     }
-
-                    picQuote2 = picQuote.toArray(picQuote2);
-                    dialog.cancel();
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(getApplicationContext(), "Hi Buddy, please check your connection", Toast.LENGTH_SHORT).show();
-                    dialog.cancel();
-                }
-            });
-        } else {
-            toastHelper(getString(R.string.conn_reminder));
-        }
+            }
+        });
     }
 
-    public void adMobs() {
+    public void initadMobs() {
 
         MobileAds.initialize(this, Contants.ADD_MOB_APP_ID);             //adMob
 
@@ -180,38 +212,37 @@ public class MainActivity extends Globals {
         }
     }
 
-    private void initShake() {
+    public void fbRetriever() {
+        logHelper("fbRetriever");
+        if (isNetworkAvailable()) {
+            showDialog(this);
+            final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference myRef = database.child("img/");
 
-        ShakeOptions options = new ShakeOptions()
-                .background(true)
-                .interval(1000)
-                .shakeCount(2)
-                .sensibility(2.0f);
-
-        this.shakeDetector = new ShakeDetector(options).start(this, new ShakeCallback() {
-            @Override
-            public void onShake() {
-
-                logHelper("shaken");
-                sendLogFBAnalytic(MainActivity.this,
-                        Contants.ID_SHAKE,
-                        Contants.NAME_SHAKE,
-                        Contants.TYPE_SHAKE
-                );
-
-                if (picQuote2 != null) {
-
-                    setPicQuote2();
-
-                } else {
-                    if (isNetworkAvailable()) {
-                        fbRetriever();
-                    } else {
-                        toastHelper(getString(R.string.conn_reminder));
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Long size = dataSnapshot.getChildrenCount();
+                    z = size.intValue();
+                    picQuote2 = new String[z];
+                    for (DataSnapshot singlesnapshot : dataSnapshot.getChildren()) {
+                        picQuote.add(singlesnapshot.getValue(String.class));
+                        logHelper("add " + singlesnapshot.getValue(String.class));
                     }
+
+                    picQuote2 = picQuote.toArray(picQuote2);
+                    dialog.cancel();
                 }
-            }
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), "Hi Buddy, please check your connection", Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                }
+            });
+        } else {
+            toastHelper(getString(R.string.conn_reminder));
+        }
     }
 
     public void setPicQuote2() {
@@ -220,7 +251,7 @@ public class MainActivity extends Globals {
         lottieAnimationView2.setVisibility(View.GONE);
         tvShake.setVisibility(View.GONE);
         adView.setVisibility(View.GONE);
-        ivShakeme.setVisibility(View.VISIBLE);
+        L1.setVisibility(View.VISIBLE);
         Picasso.get().load(url)
                 .error(R.drawable.nointernet)
                 .into(ivShakeme);
@@ -254,7 +285,9 @@ public class MainActivity extends Globals {
                 logHelper("update");
 
                 if (lottieAnimationView2.getVisibility() == View.GONE) {
-                    ivShakeme.setVisibility(View.GONE);
+                    L1.setVisibility(View.GONE);
+                    L2.setVisibility(View.GONE);
+                    cekL2 = false;
                     adView.setVisibility(View.VISIBLE);
                     lottieAnimationView2.setVisibility(View.VISIBLE);
                     tvShake.setVisibility(View.VISIBLE);
@@ -263,6 +296,49 @@ public class MainActivity extends Globals {
                 handler.postDelayed(this, 60 * 1000);
             }
         });
+    }
+
+    public void reqPermission() {
+        logHelper("reqPermission");
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+
+//                        Bitmap bmp = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
+//                        showDialog2(bmp);
+                        if (!cekL2) {
+                            cekL2 = true;
+                            L2.setVisibility(View.VISIBLE);
+                        } else {
+                            cekL2 = false;
+                            L2.setVisibility(View.GONE);
+
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                }).check();
+    }
+
+    public void shareBitmap() {
+
+        Log.d(TAG, "shareBitmap");
+
+        Bitmap bmp = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
+
+        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bmp, "title", null);
+        Uri bitmapUri = Uri.parse(bitmapPath);
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/png");
+        intent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
+        startActivity(Intent.createChooser(intent, "Share"));
     }
 
     public void imageDownload() {
@@ -277,32 +353,10 @@ public class MainActivity extends Globals {
             save2(bitmap, fname, count);
             count++;
         } else {
-            save1(bitmap,fname,this,count);
+            save1(bitmap, fname, this, count);
             count++;
         }
 
-        dialog2.cancel();
-    }
-
-    public void reqPermission() {
-        logHelper("reqPermission");
-        Dexter.withActivity(this)
-                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-
-                        Bitmap bmp = ((BitmapDrawable) ivShakeme.getDrawable()).getBitmap();
-                        showDialog2(bmp);
-
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-                }).check();
     }
 
     public void showDialog(Activity activity) {
@@ -323,7 +377,7 @@ public class MainActivity extends Globals {
         dialog.show();
     }
 
-    public void showDialog2(final Bitmap bmp) {
+   /* public void showDialog2(final Bitmap bmp) {
 
         logHelper("showdialog2");
 
@@ -356,17 +410,16 @@ public class MainActivity extends Globals {
                         Contants.NAME_BUTTON_SHARE,
                         Contants.TYPE_BUTTON);
 
-                shareBitmap(bmp);
+                shareBitmap();
             }
         });
 
 
-
         dialog2.show();
 
-    }
+    }*/
 
-/*
+   /*
     private void update3() {
         final Handler handler = new Handler();
         handler.post(new Runnable() {
