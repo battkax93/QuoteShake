@@ -48,7 +48,7 @@ public class MainActivity extends Globals {
 
     LottieAnimationView lottieAnimationView, lottieAnimationView2;
     ShakeDetector shakeDetector;
-    TextView tvShake;
+    TextView tvShake, tvTips, tvTips2;
     ImageView ivShakeme, btnShare, btnDownload;
     LinearLayout L1, L2;
     Boolean cekL2 = false;
@@ -96,6 +96,8 @@ public class MainActivity extends Globals {
         adView = findViewById(R.id.adView_main);
         lottieAnimationView2 = findViewById(R.id.lottieAnimationView2);
         tvShake = findViewById(R.id.tv_shakeme);
+        tvTips = findViewById(R.id.tv_tips);
+        tvTips2 = findViewById(R.id.tv_tips2);
         ivShakeme = findViewById(R.id.iv_shakeme);
         btnDownload = findViewById(R.id.btn_download2);
         btnShare = findViewById(R.id.btn_share2);
@@ -311,9 +313,13 @@ public class MainActivity extends Globals {
                         if (!cekL2) {
                             cekL2 = true;
                             L2.setVisibility(View.VISIBLE);
+                            tvTips.setVisibility(View.GONE);
+                            tvTips2.setVisibility(View.GONE);
                         } else {
                             cekL2 = false;
                             L2.setVisibility(View.GONE);
+                            tvTips.setVisibility(View.VISIBLE);
+                            tvTips2.setVisibility(View.VISIBLE);
 
                         }
                     }

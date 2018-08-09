@@ -5,6 +5,8 @@
     <string name="b_download">DOWNLOAD</string>
     <string name="b_share">SHARE</string>
     <string name="quote_shake">QuoteShake</string>
+    <string name="tap_me_to_share_or_download_this_image">tap me for more option</string>
+    <string name="and_shake_again_for_more_powerfull_quote">or shake again for more powerful quote</string>
 
     <string-array name="lottie">
         <item>restless_gift.json</item>

@@ -54,6 +54,24 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tv_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/tap_me_to_share_or_download_this_image"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_tips2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/and_shake_again_for_more_powerfull_quote"
+                android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/iv_shakeme"
                 android:layout_width="match_parent"
